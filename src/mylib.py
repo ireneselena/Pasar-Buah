@@ -1,5 +1,6 @@
 def inputBuah(nama, stock, harga):
-    """Fungsi untuk meminta user input jumlah buah dan menghitung harganya
+    """Fungsi meminta user untuk input jumlah buah 
+    dan menghitung harganya.
 
     Args:
         nama (String): Nama buah yang akan dibeli
@@ -7,23 +8,22 @@ def inputBuah(nama, stock, harga):
         harga (Integer): Harga buah per kg
 
     Returns:
-        nBuah (Integer): Jumlah buah yang dipesan
+        nBuah (Integer): Jumlah buah yang dipesan 
         hargaBuah (Integer): Total harga buah
     """
     while True:
         # Input jumlah buah
-        nBuah = int(input(f'Masukkan jumlah {nama}'))
+        nBuah = int(input(f'Masukkan jumlah {nama}: '))
 
-        # Membandingkan antara permintaan dengan stock
-        if nBuah > stock: 
+        # Membandingkan antara jumlah permintaan dengan stock
+        if nBuah > stock:
             print(f'Jumlah terlalu banyak, stock tersisa {stock} buah')
             continue
 
         # Berhenti minta input, ketika jumlah permintaan terpenuhi
         break
 
-    # Hitung harga untuk buah tersebut
+    # Hitung total harga untuk buah tersebut
     hargaBuah = nBuah * harga
 
-    return nBuah, hargaBuah 
-    
+    return nBuah, hargaBuah
