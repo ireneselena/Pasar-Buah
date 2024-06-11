@@ -32,6 +32,7 @@ def main():
             mylib.delete(daftarBuah)
         elif option == "4":
             mylib.buy(daftarBuah)
+            break
         elif option == "5":
             break
         else:

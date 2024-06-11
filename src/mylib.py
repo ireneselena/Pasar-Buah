@@ -121,7 +121,7 @@ def buy(database):
         total += totalHarga
 
     show(database= buahDiKeranjang, header = ["Nama", "Qty", "Harga", "Total Harga"])
-    print(f'Total yang harus dibayar: {total}')  
+    print(f'Total yang harus dibayar: Rp.{total}')  
     
     pembayaran(total)
     
@@ -145,20 +145,6 @@ def pembayaran(total):
             print(f'''Terimakasih. Uang kembalian Anda: {abs(selisih)}''')
         break
     
-
-
-           
-    
-        
-        
-
-
-            
-      
-
-
-
-
 
 
 def inputBuah(nama, stock, harga):
