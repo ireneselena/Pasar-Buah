@@ -6,6 +6,7 @@ daftarBuah = [
     [2, "Anggur", 25, 20000]
     ]
 
+
 def main():
     listMenu = '''Selamat Datang di Pasar Buah!
     

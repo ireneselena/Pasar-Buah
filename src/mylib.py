@@ -2,24 +2,26 @@ from tabulate import tabulate
 
 def string_validation(title):
     while True:
-        a = input(title)
-        if a.isalpha() == True:
+        text = input(title)
+        if text.isalpha() == True:
             break
         else:
             print("Silahkan inputkan hanya teks")
-    return a.capitalize()
+    return text.capitalize()
 
 
-def integer_validation(title):
+def integer_validation(title, minval=0, maxval=100):
     while True:
-        a = input(title)
-        if a.isnumeric() != True:
-            print("Yang Anda inputkan bukan bilangan")
-        elif int(a) >= 0:
-            break
-        else:
-            print("Angka yang Anda inputkan salah")
-    return int(a) 
+        num = input(title)
+        try:
+            num = int(num)
+            if num >= minval and num <= maxval:
+                break
+            else:
+                print('Angka yang anda masukkan di luar rentang')
+        except:
+            print("yang Anda inputkan bukan bilangan")
+    return num 
 
 
 def show(database, header=["index", "name", "stock", "price"]):
@@ -37,7 +39,7 @@ def add(database):
     # Meminta input data buah yang baru
     name = string_validation("Masukkan Nama Buah: ")
     stock = integer_validation("Masukkan Stock Buah: ")
-    price = integer_validation("Masukkan Harga Buah: ")
+    price = integer_validation("Masukkan Harga Buah: ", maxval=150000)
 
     # Menambahkan data ke database
     for id, buah in enumerate(database):
@@ -50,26 +52,20 @@ def add(database):
     # Menampilkan database ter-update
     show(database)
 
-daftarBuah = [
-    [0, "Apel", 20, 10000],
-    [1, "Jeruk", 15, 15000],
-    [2, "Anggur", 25, 20000]
-    ]
 
 def delete(database):
     # Menampilkan database terbaru
     show(database)
 
     # Meminta user input indeks yang akan dihapus
-    idx = integer_validation("Masukkan index buah yang ingin dihapus: ")
+    idx = integer_validation("Masukkan index buah yang ingin dihapus: ", maxval=len(database))
 
     # Melakukan proses penghapusan sesuai index
-    for buah in database:
+    for id, buah in enumerate(database):
         if idx == buah[0]:
             del database[idx]
-            break
-    else:
-        print('Buah yang Anda cari tidak ada')
+        else:
+            print('Buah yang Anda cari tidak ada')
 
     # Memperbarui index
     for id, buah in enumerate(database):
@@ -79,35 +75,45 @@ def delete(database):
     # Menampilkan database terbaru
     show(database)
 
-def buy(database):
-    # Menampilkan database terbaru
-    show(database)
 
+def buy(database):
+    # Menyalin database ke dalam penyimpanan sementara
+    databaseTemp =database.copy()
+
+    # Definisi variabel untuk menyimpan belanjaan 
     buahDiKeranjang = []
+
+    # Proses pembelian
     reorder = None
-    while reorder != "tidak": 
-        idBuah = integer_validation('Masukkan index buah yang ingin dibeli: ')
-        jumlahBuah = integer_validation('Masukkan jumlah yang ingin dibeli: ')
-        if jumlahBuah > database[idBuah][2]:
-            print(f'Stock tidak cukup, stock {database[idBuah][1]} tinggal {database[idBuah][2]}')
-            print('Isi cart:')
-            showCart(buahDiKeranjang)
-            
-        elif jumlahBuah <= database[idBuah][2]:
-            buahDiKeranjang.append([database[idBuah][1],jumlahBuah,database[idBuah][3]])
-            showCart(buahDiKeranjang)
-            
+    while reorder != "no": 
+
+        # Menampilkan database
+        show(databaseTemp)
+
+        # Meminta input untuk index dan jumlah buah yang ingin dibeli
+        idBuah = integer_validation('Masukkan index buah yang ingin dibeli: ', maxval=len(databaseTemp)-1)
+        jumlahBuah = integer_validation('Masukkan jumlah yang ingin dibeli: ', minval=1, maxval=databaseTemp[idBuah][2])
+
+        # Menambahkan ke dalam keranjang belanja
+        buahDiKeranjang.append([databaseTemp[idBuah][1], jumlahBuah, databaseTemp[idBuah][3]])
+
+        # Menampilkan keranjang belanja
+        showCart(buahDiKeranjang)
+
+        # Konfirmasi reorder
         while True:
             beliLain = string_validation('Mau beli yang lain? (ya/tidak)= ').lower()
-            if beliLain == "ya":
-                reorder = "ya"
-            elif beliLain == "tidak":
-                reorder = "tidak"
-
+            if beliLain in ["ya", "yes", "y", "iya"]:
+                reorder = "yes"
+            elif beliLain in ["tidak", "enggak", "gak", "g", "no", "n"]:
+                reorder = "no"
             break
     
-        # Menghitung total harga
-        total = 0
+        # Update stock sementara
+        databaseTemp[idBuah][2] -= jumlahBuah
+
+    # Menghitung total harga
+    total = 0
 
 
     for idx, buah in enumerate(buahDiKeranjang):
@@ -120,11 +126,17 @@ def buy(database):
         # Sum seluruh harga
         total += totalHarga
 
+    # Menampilkan keranjang belanja
     show(database= buahDiKeranjang, header = ["Nama", "Qty", "Harga", "Total Harga"])
+
+    # Menampilkan uang yang harus dibayar
     print(f'Total yang harus dibayar: Rp.{total}')  
     
+    # Proses pembayaran
     pembayaran(total)
     
+    # Update database
+    database = databaseTemp.copy()
 
 
 def pembayaran(total): 
@@ -143,36 +155,5 @@ def pembayaran(total):
         # Ucapkan terima kasih ketika selesai pembayaran
         else:
             print(f'''Terimakasih. Uang kembalian Anda: {abs(selisih)}''')
-        break
+            break
     
-
-
-def inputBuah(nama, stock, harga):
-    """Fungsi meminta user untuk input jumlah buah 
-    dan menghitung harganya.
-
-    Args:
-        nama (String): Nama buah yang akan dibeli
-        stock (Integer): Stock buah yang akan dibeli
-        harga (Integer): Harga buah per kg
-
-    Returns:
-        nBuah (Integer): Jumlah buah yang dipesan 
-        hargaBuah (Integer): Total harga buah
-    """
-    while True:
-        # Input jumlah buah
-        nBuah = int(input(f'Masukkan jumlah {nama}: '))
-
-        # Membandingkan antara jumlah permintaan dengan stock
-        if nBuah > stock:
-            print(f'Jumlah terlalu banyak, stock tersisa {stock} buah')
-            continue
-
-        # Berhenti minta input, ketika jumlah permintaan terpenuhi
-        break
-
-    # Hitung total harga untuk buah tersebut
-    hargaBuah = nBuah * harga
-
-    return nBuah, hargaBuah
