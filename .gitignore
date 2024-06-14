@@ -1,8 +1,7 @@
 # General
-
+push.txt
 
 # Python
 src/__pycache__/
-main2.py
-mylib2.py
-push.txt
+src/main2.py
+src/mylib2.py
